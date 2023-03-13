@@ -6,7 +6,7 @@ let currentPath = [];
 let isCapturing = false;
 let drawingStart;
 
-let _x, _y, _z
+let _x = 0, _y = 0, _z
 let mn = 0
 let mx = 0
 
@@ -22,14 +22,13 @@ function onAskButtonClicked() {
   }).catch(console.error)
 }
 
+function windowResized() {
+  resizeCanvas(windowWidth, windowHeight);
+}
+
 function setup() {
   createCanvas(windowWidth, windowHeight)
-  super_btn = createButton("Start Dancing!");
-  super_btn.position(width / 2 - 50, height - 100);
-  super_btn.style('margin', '0 auto');
-  super_btn.size(100);
-  super_btn.mousePressed(startPath);
-  translate(width / 2, height / 2);
+  start_btn = document.getElementById("start");
 
   if (typeof (DeviceMotionEvent.requestPermission) === 'function') {
     DeviceOrientationEvent.requestPermission()
@@ -55,15 +54,18 @@ function setup() {
 function startPath() {
   drawingStart = millis();
   isCapturing = true;
+  drawing = [];
+  palette = [];
   currentPath = [];
   drawing.push(currentPath);
   palette.push(select('#picker').value());
-  super_btn.hide();
+  start_btn.disabled = true;
 }
 
 function endPath() {
   drawingStart = null;
   isCapturing = false;
+  start_btn.disabled = false;
 }
 
 function visualizeData(data) {
@@ -79,8 +81,15 @@ function visualizeData(data) {
   console.log(drawing, palette);
 }
 
+function updateColor() {
+  let color = select('#picker').value();
+  document.querySelector("i");
+  document.querySelector("i").style.color = color;
+}
+
 function draw() {
   background('#333');
+  // stroke(255);
   // line(width / 2, 0, width / 2, height);
   // mx = max(mx,accelerationZ)
   // mn = min(mn, accelerationZ)
@@ -89,51 +98,70 @@ function draw() {
     return
   }
   if (isCapturing && !isAdmin) {
-    _x = accelerationX * 5;
-    _y = accelerationY * 5;
-    _z = 50 + map(accelerationZ, -250, 250, -40, 40);
+    _x += (mouseX - _x) * 0.1;
+    _y += (mouseY - _y) * 0.1;
+    _z = 5; //0 + map(accelerationZ, -250, 250, -40, 40);
     let state = {
       x: _x,
       y: _y,
-      sz: _z
+      z: _z
     };
     currentPath.push(state);
+    start_btn.innerHTML = floor(millis() / 1000) + "s";
     if (drawingStart && millis() - drawingStart > 10000) {
       endPath();
     }
+  } else {
+    start_btn.innerHTML = "Start Dancing!";
   }
 
-
-  strokeWeight(4);
+  // translate(width / 2, height / 2);
   noFill();
   for (let i = 0; i < drawing.length; i++) {
     let path = drawing[i];
     let col = palette[i];
     stroke(col);
     beginShape();
-    for (let j = 0; j < path.length; j++) {
+    for (let j = 0; j < path.length - 4; j += 3) {
+      strokeWeight(_z);
       vertex(path[j].x, path[j].y);
+      bezierVertex(path[j].x, path[j].y, path[j + 1].x, path[j + 1].y, path[j + 2].x, path[j + 2].y);
     }
     endShape();
   }
+
+  if (!isCapturing) {
+    _x = mouseX;
+    _y = mouseY;
+    _z = 5; //0 + map(accelerationZ, -250, 250, -40, 40);
+  }
+
+
 }
 
 function keyPressed() {
   if (key == " ") {
     isAdmin = false;
     drawing = [];
-    super_btn.show();
+    palette = [];
+    endPath();
+    start_btn.disabled = false;
   } else if (key == "Escape") {
     endPath();
   }
 }
 
 function touchStarted() {
-  if (touches.length == 2) {
+  if (touches.length == 3) {
     isAdmin = false;
     drawing = [];
-    super_btn.show();
-  } else if (touches.length == 1) {
+    palette = [];
+    endPath();
+    start_btn.disabled = false;
+  } else if (touches.length == 2) {
     endPath();
   }
 }
+
+
+

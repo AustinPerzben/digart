@@ -4,25 +4,29 @@
 <head>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/p5.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/addons/p5.sound.min.js"></script>
-  <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+  <script src="https://kit.fontawesome.com/5456001138.js" crossorigin="anonymous"></script>
   <script type="module" src="index.js"></script>
   <script type="module">
     import * as fireb from './index.js';
     window.fb = fireb;
   </script>
   <script src="sketch.js"></script>
-
+  <title>Between Two Realms - AitDR Tutorial</title>
   <link rel="stylesheet" type="text/css" href="style.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta charset="utf-8" />
 </head>
 
 <body>
-  <div>
-    <input id="picker" type="color" value="#dddddd" />
-    <ion-icon name="eyedrop" onclick="document.getElementById('picker').click()"></ion-icon>
+  <header>
+    <input id="picker" type="color" value="#lime" onchange="updateColor()" />
+    <i style="--c:lime" class="fa fa-palette" onclick="document.getElementById('picker').click()"></i>
     <input id="name" type="text" placeholder="Enter your name" />
     <button onclick="fb.saveData()">Submit</button>
-  </div>
+  </header>
+  <footer>
+    <button id="start" onclick="startPath()">Start Dancing!</button>
+  </footer>
 </body>
 
 </html>
