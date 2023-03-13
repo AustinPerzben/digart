@@ -12,7 +12,7 @@ let mx = 0
 
 // will handle first time visiting to grant access
 function onAskButtonClicked() {
-  DeviceMotionEvent.requestPermission().then(response => {
+  DeviceOrientationEvent.requestPermission().then(response => {
     if (response === 'granted') {
       permissionGranted = true
     } else {
@@ -30,7 +30,7 @@ function setup() {
   createCanvas(windowWidth, windowHeight)
   start_btn = document.getElementById("start");
 
-  if (typeof (DeviceMotionEvent.requestPermission) === 'function') {
+  if (typeof (DeviceOrientationEvent.requestPermission) === 'function') {
     DeviceOrientationEvent.requestPermission()
       .catch(() => {
         // show permission dialog only the first time
@@ -98,9 +98,9 @@ function draw() {
     return
   }
   if (isCapturing && !isAdmin) {
-    _x += (accelerationX - _x) * 0.1;
-    _y += (accelerationY - _y) * 0.1;
-    _z = 50 + map(accelerationZ, -250, 250, -40, 40);
+    _x += (rotationX - _x) * 0.1;
+    _y += (rotationY - _y) * 0.1;
+    _z = 50 + map(rotationZ, -250, 250, -40, 40);
     let state = {
       x: _x,
       y: _y,
@@ -146,8 +146,10 @@ function keyPressed() {
     palette = [];
     endPath();
     start_btn.disabled = false;
+    return false;
   } else if (key == "Escape") {
     endPath();
+    return false;
   }
 }
 
