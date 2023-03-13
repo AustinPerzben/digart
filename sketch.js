@@ -164,17 +164,17 @@ function draw() {
   }
 
   // translate(width / 2, height / 2);
-  noFill();
-  for (let i = 0; i < drawing.length; i++) {
-    let path = drawing[i];
-    let col = palette[i];
+  // noFill();
+  // for (let i = 0; i < drawing.length; i++) {
+  //   let path = drawing[i];
+  //   let col = palette[i];
 
-    path.forEach((dot) => {
-      strokeWeight(dot.z);
-      vertex(dot.x, dot.y);
-      // 
-    });
-  }
+  //   path.forEach((dot) => {
+  //     strokeWeight(dot.z);
+  //     vertex(dot.x, dot.y);
+  //     //
+  //   });
+  // }
 }
 
 function keyPressed() {
