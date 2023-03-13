@@ -32,7 +32,7 @@ export let app = initializeApp(firebaseConfig);
 export const db = getDatabase(app);
 
 export function saveData() {
-  console.log("Saving data to database...");
+  console.log("Connecting to database...");
   let txt_field = document.getElementById("name");
   if (txt_field.value == "") {
     txt_field.placeholder = "Please enter a name!";

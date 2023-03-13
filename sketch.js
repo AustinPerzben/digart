@@ -5,6 +5,7 @@ let palette = [];
 let currentPath = [];
 let isCapturing = false;
 let drawingStart;
+let step = null;
 
 // Position Variables
 let x = 0;
@@ -119,9 +120,12 @@ function startPath() {
 }
 
 function endPath() {
+  isAdmin = false;
   drawingStart = null;
   isCapturing = false;
+  step = null;
   start_btn.disabled = false;
+  background("#333");
 }
 
 function visualizeData(data) {
@@ -146,7 +150,7 @@ function updateColor() {
 }
 
 function draw() {
-
+  // print(isAdmin);
   if (!motionGranted || !orientationGranted) {
     return
   }
@@ -166,47 +170,39 @@ function draw() {
   } else {
     start_btn.innerHTML = "Start Dancing!";
   }
-  let step = 0;
-  while (isAdmin && step != null) {
+
+  if (isAdmin) {
+    if (step == null) {
+      step = 0;
+    }
     for (let i = 0; i < drawing.length; i++) {
       let path = drawing[i];
       let col = palette[i];
       noStroke();
       fill(col);
-      if (step < path.length) {
-        ellipse(path[step].x, path[step].y, path[step].z, path[step].z);
-      } else {
+      if (step >= path.length) {
         tracker[i] = true;
       }
-      if (tracker.every((val) => val === true)) {
+      if (!tracker.includes(false)) {
+        isAdmin = false;
         step = null;
+        break;
       }
+      if (!tracker[i]) {
+        ellipse(path[step].x, path[step].y, path[step].z, path[step].z);
+      }
+
     }
     step++;
 
   }
-
-  // translate(width / 2, height / 2);
-  // noFill();
-  // for (let i = 0; i < drawing.length; i++) {
-  //   let path = drawing[i];
-  //   let col = palette[i];
-
-  //   path.forEach((dot) => {
-  //     strokeWeight(dot.z);
-  //     vertex(dot.x, dot.y);
-  //     //
-  //   });
-  // }
 }
 
 function keyPressed() {
   if (key == " ") {
-    isAdmin = false;
     drawing = [];
     palette = [];
     endPath();
-    start_btn.disabled = false;
     return false;
   } else if (key == "Escape") {
     endPath();
@@ -216,11 +212,9 @@ function keyPressed() {
 
 function touchStarted() {
   if (touches.length == 3) {
-    isAdmin = false;
     drawing = [];
     palette = [];
     endPath();
-    start_btn.disabled = false;
   } else if (touches.length == 2) {
     endPath();
   }
