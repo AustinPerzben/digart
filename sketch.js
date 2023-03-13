@@ -112,6 +112,7 @@ function startPath() {
   currentPath = [];
   drawing.push(currentPath);
   palette.push(select('#picker').value());
+  console.log(palette[0]);
   start_btn.disabled = true;
 }
 
