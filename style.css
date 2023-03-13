@@ -9,10 +9,10 @@ body {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  color: #484848;
+  background: #ffffff;
   font-size: 10pt;
   font-weight: 300;
-  color: #636363;
+  color: #444444;
 }
 
 canvas {
@@ -63,7 +63,7 @@ input {
   padding: 5px;
   border-bottom: 2px solid #aaa;
   caret-color: lightgray;
-  color: white;
+  color: gray;
 }
 
 input::placeholder {
@@ -92,7 +92,7 @@ button {
   border: 2px solid lightgray;
   border-radius: 2px;
   font-weight: bold;
-  background: transparent;
+  background: grey;
   color: lightgray;
 }
 
@@ -102,7 +102,7 @@ button:active {
 }
 
 button:hover {
-  background: black;
+  background: grey;
 }
 
 button:focus {
@@ -110,8 +110,9 @@ button:focus {
 }
 
 button:disabled {
-  color: #6e6e6e;
-  border-color: #6e6e6e;
+  color: #ffffff;
+  border-color: #ffffff;
+  opacity: 0;
 }
 
 footer button {

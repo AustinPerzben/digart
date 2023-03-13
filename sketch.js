@@ -61,7 +61,7 @@ function windowResized() {
 
 function setup() {
   createCanvas(window.innerWidth, window.innerHeight)
-  background('#333');
+  background('transparent');
 
   x = width / 2;
   y = height / 2;
@@ -125,7 +125,7 @@ function endPath() {
   isCapturing = false;
   step = null;
   start_btn.disabled = false;
-  background("#333");
+  clear();
 }
 
 function visualizeData(data) {
