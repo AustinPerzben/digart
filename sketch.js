@@ -1,33 +1,67 @@
-let permissionGranted = false
-let isAdmin = false
+let permissionGranted = false;
+let isAdmin = false;
 let drawing = [];
 let palette = [];
 let currentPath = [];
 let isCapturing = false;
 let drawingStart;
 
-let _x = 0, _y = 0, _z
-let mn = 0
-let mx = 0
+// Position Variables
+let x = 0;
+let y = 0;
+let z = 0;
+
+// Speed - Velocity
+let vx = 0;
+let vy = 0;
+let dz = 0;
+
+// Acceleration
+let ax = 0;
+let ay = 0;
+let az = 0;
+
+// Rotation
+let rx = 0;
+let ry = 0;
+
+let vMultiplier = 0.1;
+let bMultiplier = 0.4;
+let sMultiplier = 0.1;
+let rMultiplier = 0.05;
+
+let gravity = 0.01;
+let drag = 0.9;
 
 // will handle first time visiting to grant access
 function onAskButtonClicked() {
   DeviceOrientationEvent.requestPermission().then(response => {
     if (response === 'granted') {
-      permissionGranted = true
+      orientationGranted = true
     } else {
-      permissionGranted = false
+      orientationGranted = false
     }
     this.remove()
-  }).catch(console.error)
+  }).catch(console.error);
+
+  DeviceMotionEvent.requestPermission().then(response => {
+    if (response === 'granted') {
+      motionGranted = true
+    } else {
+      motionGranted = false
+    }
+    this.remove()
+  }).catch(console.error);
 }
 
 function windowResized() {
-  resizeCanvas(windowWidth, windowHeight);
+  resizeCanvas(window.innerWidth, window.innerHeight);
 }
 
 function setup() {
-  createCanvas(windowWidth, windowHeight)
+  createCanvas(window.innerWidth, window.innerHeight)
+  x = width / 2;
+  y = height / 2;
   start_btn = document.getElementById("start");
 
   if (typeof (DeviceOrientationEvent.requestPermission) === 'function') {
@@ -43,11 +77,30 @@ function setup() {
       })
       .then(() => {
         // this runs on subsequent visits
-        permissionGranted = true
+        orientationGranted = true
       })
   } else {
     // it's up to you how to handle non ios 13 devices
-    permissionGranted = true
+    orientationGranted = true
+  }
+  if (typeof (DeviceMotionEvent.requestPermission) === 'function') {
+    DeviceMotionEvent.requestPermission()
+      .catch(() => {
+        // show permission dialog only the first time
+        // it needs to be a user gesture (requirement) in this case, click
+        let askButton = createButton("Allow acess to sensors")
+        askButton.style("font-size", "24px")
+        askButton.position(0, 0)
+        askButton.mousePressed(onAskButtonClicked)
+        throw error // keep the promise chain as rejected
+      })
+      .then(() => {
+        // this runs on subsequent visits
+        motionGranted = true
+      })
+  } else {
+    // it's up to you how to handle non ios 13 devices
+    motionGranted = true
   }
 }
 
@@ -89,26 +142,17 @@ function updateColor() {
 
 function draw() {
   background('#333');
-  // stroke(255);
-  // line(width / 2, 0, width / 2, height);
-  // mx = max(mx,accelerationZ)
-  // mn = min(mn, accelerationZ)
-  // text(floor(mn)+","+ceil(mx),width/2-10, 50)
-  if (!permissionGranted) {
+
+  if (!motionGranted || !orientationGranted) {
     return
   }
   if (isCapturing && !isAdmin) {
-    _x += (rotationX - _x) * 0.1;
-    _y += (rotationY - _y) * 0.1;
-    _z = 50 + map(rotationZ, -250, 250, -40, 40);
-    let state = {
-      x: _x,
-      y: _y,
-      z: _z
-    };
+    ballMove();
+    ballSize();
+    let state = { x: x, y: y, z: z };
     currentPath.push(state);
-    start_btn.innerHTML = floor(millis() / 1000) + "s";
-    if (drawingStart && millis() - drawingStart > 10000) {
+    start_btn.innerHTML = round((millis() - drawingStart) / 1000, 1) + "s";
+    if (drawingStart && millis() - drawingStart > 30000) {
       endPath();
     }
   } else {
@@ -122,11 +166,12 @@ function draw() {
     let col = palette[i];
     stroke(col);
     beginShape();
-    for (let j = 0; j < path.length - 4; j += 3) {
-      strokeWeight(_z);
-      vertex(path[j].x, path[j].y);
-      bezierVertex(path[j].x, path[j].y, path[j + 1].x, path[j + 1].y, path[j + 2].x, path[j + 2].y);
-    }
+    noFill();
+    path.forEach((dot) => {
+      strokeWeight(dot.z);
+      vertex(dot.x, dot.y);
+      // ellipse(x, y, 10 + z, 10 + z);
+    });
     endShape();
   }
 
@@ -166,4 +211,49 @@ function touchStarted() {
 }
 
 
+function ballMove() {
+  ax = accelerationX + (x - width / 2) * -gravity;
+  ay = accelerationY + (y - height / 2) * -gravity;
+  rx = rotationX + z ** 2 * -gravity;
+  ry = rotationY + z ** 2 * -gravity;
 
+  vx += ax;
+  vy += ay;
+  vx *= drag;
+  vy *= drag;
+  y += vy * vMultiplier + rx * rMultiplier;
+  x += vx * vMultiplier + ry * rMultiplier;
+
+  // Bounce when touch the edge of the canvas
+  if (x < 0) {
+    x = 0;
+    vx = -vx * bMultiplier;
+  }
+  if (y < 0) {
+    y = 0;
+    vy = -vy * bMultiplier;
+  }
+  if (x > width - 5) {
+    x = width - 5;
+    vx = -vx * bMultiplier;
+  }
+  if (y > height - 5) {
+    y = height - 5;
+    vy = -vy * bMultiplier;
+  }
+}
+
+function ballSize() {
+  az = accelerationZ;
+  dz += az;
+  z += dz * sMultiplier;
+
+  if (z > 10) {
+    z = 10;
+    dz = -dz * bMultiplier;
+  }
+  if (z < 0) {
+    z = 0;
+    dz = -dz * bMultiplier;
+  }
+}
