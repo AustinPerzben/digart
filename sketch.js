@@ -60,6 +60,8 @@ function windowResized() {
 
 function setup() {
   createCanvas(window.innerWidth, window.innerHeight)
+  background('#333');
+
   x = width / 2;
   y = height / 2;
   start_btn = document.getElementById("start");
@@ -124,6 +126,7 @@ function endPath() {
 
 function visualizeData(data) {
   isAdmin = true;
+  tracker = [];
   drawing = [];
   palette = [];
   let keys = Object.keys(data);
@@ -131,6 +134,7 @@ function visualizeData(data) {
   for (let i = 0; i < keys.length; i++) {
     drawing.push(values[i].path);
     palette.push(values[i].color);
+    tracker.push(false)
   }
   console.log(drawing, palette);
 }
@@ -142,7 +146,6 @@ function updateColor() {
 }
 
 function draw() {
-  background('#333');
 
   if (!motionGranted || !orientationGranted) {
     return
@@ -153,6 +156,7 @@ function draw() {
     let state = { x: x, y: y, z: z };
     let col = palette[0];
     currentPath.push(state);
+    noStroke();
     fill(col);
     ellipse(x, y, 10 + z, 10 + z);
     start_btn.innerHTML = round((millis() - drawingStart) / 1000, 0) + "s";
@@ -161,6 +165,25 @@ function draw() {
     }
   } else {
     start_btn.innerHTML = "Start Dancing!";
+  }
+  let step = 0;
+  while (isAdmin && step != null) {
+    for (let i = 0; i < drawing.length; i++) {
+      let path = drawing[i];
+      let col = palette[i];
+      noStroke();
+      fill(col);
+      if (step < path.length) {
+        ellipse(path[step].x, path[step].y, path[step].z, path[step].z);
+      } else {
+        tracker[i] = true;
+      }
+      if (tracker.every((val) => val === true)) {
+        step = null;
+      }
+    }
+    step++;
+
   }
 
   // translate(width / 2, height / 2);

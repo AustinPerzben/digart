@@ -51,7 +51,7 @@ export function saveData() {
   txt_field.placeholder = "Thanks!"
   setTimeout(() => {
     txt_field.placeholder = "Enter your name";
-  }, 3000);
+  }, 1500);
   console.log("Wrote data to database");
 }
 
