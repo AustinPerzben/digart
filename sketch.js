@@ -98,9 +98,9 @@ function draw() {
     return
   }
   if (isCapturing && !isAdmin) {
-    _x += (mouseX - _x) * 0.1;
-    _y += (mouseY - _y) * 0.1;
-    _z = 5; //0 + map(accelerationZ, -250, 250, -40, 40);
+    _x += (accelerationX - _x) * 0.1;
+    _y += (accelerationY - _y) * 0.1;
+    _z = 50 + map(accelerationZ, -250, 250, -40, 40);
     let state = {
       x: _x,
       y: _y,
