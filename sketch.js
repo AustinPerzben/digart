@@ -91,7 +91,7 @@ function draw() {
   if (isCapturing && !isAdmin) {
     _x = accelerationX * 5;
     _y = accelerationY * 5;
-    _z = 50 + map(accelerationZ, -250, 250, -40, 40));
+    _z = 50 + map(accelerationZ, -250, 250, -40, 40);
     let state = {
       x: _x,
       y: _y,
