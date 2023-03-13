@@ -147,12 +147,15 @@ function draw() {
   if (!motionGranted || !orientationGranted) {
     return
   }
-  if (isCapturing && !isAdmin) {
+  if (isCapturing) {
     ballMove();
     ballSize();
     let state = { x: x, y: y, z: z };
+    let col = palette[0];
     currentPath.push(state);
-    start_btn.innerHTML = round((millis() - drawingStart) / 1000, 1) + "s";
+    fill(col);
+    ellipse(x, y, 10 + z, 10 + z);
+    start_btn.innerHTML = round((millis() - drawingStart) / 1000, 0) + "s";
     if (drawingStart && millis() - drawingStart > 30000) {
       endPath();
     }
@@ -165,24 +168,13 @@ function draw() {
   for (let i = 0; i < drawing.length; i++) {
     let path = drawing[i];
     let col = palette[i];
-    stroke(col);
-    beginShape();
-    noFill();
+
     path.forEach((dot) => {
       strokeWeight(dot.z);
       vertex(dot.x, dot.y);
-      // ellipse(x, y, 10 + z, 10 + z);
+      // 
     });
-    endShape();
   }
-
-  if (!isCapturing) {
-    _x = mouseX;
-    _y = mouseY;
-    _z = 5; //0 + map(accelerationZ, -250, 250, -40, 40);
-  }
-
-
 }
 
 function keyPressed() {
