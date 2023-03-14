@@ -27,10 +27,10 @@ export function saveData() {
   if (txt_field.value == "") {
     txt_field.placeholder = "Please enter a name!";
     return;
-  } else if (txt_field.value == "admin") {
+  } else if (txt_field.value.includes("admin")) {
+    loadData(txt_field.value);
     txt_field.value = "";
     txt_field.placeholder = "Loading...";
-    loadData();
     return;
   }
 
@@ -47,11 +47,29 @@ export function saveData() {
   console.log("Wrote data to database");
 }
 
-export function loadData() {
-  const reference = ref(db, "tutorial/");
+export function loadData(_str) {
+  console.log(_str);
+  let key = "";
+  if (_str.includes("-")) {
+    key = _str.split("-")[1];
+  }
+  console.log(key);
+  const reference = ref(db, "tutorial/" + key);
   onValue(reference, (snapshot) => {
     let data = snapshot.val();
+    let keys = Object.keys(data);
+    let values = Object.values(data);
     console.log("Reading database...");
+    console.log(keys, values);
+    for (let i = 0; i < keys.length; i++) {
+      const obj = values[i];
+      if (key == "" && obj.path == undefined) {
+        delete data[keys[i]];
+      } else if (key == keys[i]) {
+        data = obj;
+      }
+    }
+    console.log(data);
     document.getElementById("name").placeholder = "Enter your name";
     visualizeData(data);
   });

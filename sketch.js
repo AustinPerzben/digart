@@ -121,12 +121,14 @@ function startPath() {
 }
 
 function endPath() {
+  if (isCapturing) {
+    start_btn.innerHTML = "Thank you for Dancing!";
+  }
   isAdmin = false;
   drawingStart = null;
   isCapturing = false;
   step = null;
   start_btn.disabled = false;
-  start_btn.innerHTML = "Thank you for Dancing!";
   setTimeout(() => {
     start_btn.innerHTML = "Start Dancing!";
   }, 3000);
@@ -210,6 +212,7 @@ function keyPressed() {
     palette = [];
     endPath();
     clear();
+    start_btn.innerHTML = "Clearing...";
     return false;
   } else if (key == "Escape") {
     endPath();
@@ -222,6 +225,7 @@ function touchStarted() {
     drawing = [];
     palette = [];
     endPath();
+    clear();
   } else if (touches.length == 2) {
     endPath();
   }
