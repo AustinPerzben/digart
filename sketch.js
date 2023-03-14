@@ -108,6 +108,7 @@ function setup() {
 }
 
 function startPath() {
+  clear();
   drawingStart = millis();
   isCapturing = true;
   drawing = [];
@@ -125,7 +126,10 @@ function endPath() {
   isCapturing = false;
   step = null;
   start_btn.disabled = false;
-  clear();
+  start_btn.innerHTML = "Thank you for Dancing!";
+  setTimeout(() => {
+    start_btn.innerHTML = "Start Dancing!";
+  }, 3000);
 }
 
 function visualizeData(data) {
@@ -133,6 +137,8 @@ function visualizeData(data) {
   tracker = [];
   drawing = [];
   palette = [];
+  start_btn.disabled = true;
+  start_btn.innerHTML = "Visualizing...";
   let keys = Object.keys(data);
   let values = Object.values(data);
   for (let i = 0; i < keys.length; i++) {
@@ -140,7 +146,7 @@ function visualizeData(data) {
     palette.push(values[i].color);
     tracker.push(false)
   }
-  console.log(drawing, palette);
+  // console.log(drawing, palette);
 }
 
 function updateColor() {
@@ -150,7 +156,7 @@ function updateColor() {
 }
 
 function draw() {
-  // print(isAdmin);
+  // line(width / 2, 0, width / 2, height);
   if (!motionGranted || !orientationGranted) {
     return
   }
@@ -163,12 +169,10 @@ function draw() {
     noStroke();
     fill(col);
     ellipse(x, y, 10 + z, 10 + z);
-    start_btn.innerHTML = round((millis() - drawingStart) / 1000, 0) + "s";
+    start_btn.innerHTML = 30 - round((millis() - drawingStart) / 1000, 0) + "s";
     if (drawingStart && millis() - drawingStart > 30000) {
       endPath();
     }
-  } else {
-    start_btn.innerHTML = "Start Dancing!";
   }
 
   if (isAdmin) {
@@ -186,6 +190,8 @@ function draw() {
       if (!tracker.includes(false)) {
         isAdmin = false;
         step = null;
+        start_btn.disabled = false;
+        start_btn.innerHTML = "Start Dancing!";
         break;
       }
       if (!tracker[i]) {
@@ -203,6 +209,7 @@ function keyPressed() {
     drawing = [];
     palette = [];
     endPath();
+    clear();
     return false;
   } else if (key == "Escape") {
     endPath();

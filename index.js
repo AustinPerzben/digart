@@ -17,17 +17,7 @@ export const firebaseConfig = {
   appId: "1:930500695794:web:3ca9c01512c1385a3ce26b",
   measurementId: "G-TKCFZJHVCB",
 };
-// // Get a reference to the database service
-// const auth = getAuth(app);
-// // All the regions, channels, and memes
 
-// onAuthStateChanged(auth, (user) => {
-//   if (user != null) {
-//     console.log("User is signed in");
-//   } else {
-//     console.log("User is not signed in");
-//   }
-// });
 export let app = initializeApp(firebaseConfig);
 export const db = getDatabase(app);
 
@@ -38,6 +28,8 @@ export function saveData() {
     txt_field.placeholder = "Please enter a name!";
     return;
   } else if (txt_field.value == "admin") {
+    txt_field.value = "";
+    txt_field.placeholder = "Loading...";
     loadData();
     return;
   }
@@ -51,7 +43,7 @@ export function saveData() {
   txt_field.placeholder = "Thanks!"
   setTimeout(() => {
     txt_field.placeholder = "Enter your name";
-  }, 1500);
+  }, 3000);
   console.log("Wrote data to database");
 }
 
@@ -60,6 +52,7 @@ export function loadData() {
   onValue(reference, (snapshot) => {
     let data = snapshot.val();
     console.log("Reading database...");
+    document.getElementById("name").placeholder = "Enter your name";
     visualizeData(data);
   });
 }
